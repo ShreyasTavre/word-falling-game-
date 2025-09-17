@@ -5,8 +5,6 @@ using System.Linq;
 public class WordManager : MonoBehaviour
 {
     [SerializeField] private WordSpawner wordSpawner;
-    // We don't need the bulletPrefab field here anymore
-    // [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
 
     private List<Word> words = new List<Word>();
@@ -20,6 +18,7 @@ public class WordManager : MonoBehaviour
 
     public void TypeLetter(char letter)
     {
+        // If we already have an active word, we can only type letters for that word.
         if (activeWord != null)
         {
             if (activeWord.GetNextLetter() == letter)
@@ -27,17 +26,26 @@ public class WordManager : MonoBehaviour
                 activeWord.TypeLetter();
             }
         }
+        // If there's no active word, find a new one that starts with the typed letter.
         else
         {
+            // Find the first word in the list that matches the typed letter.
             activeWord = words.FirstOrDefault(word => word.GetNextLetter() == letter);
+            
             if (activeWord != null)
             {
                 activeWord.TypeLetter();
             }
         }
 
+        // If the active word is fully typed, clear it so we can select a new one.
         if (activeWord != null && activeWord.WordTyped())
         {
+            if(UIManager.Instance != null)
+            {
+                UIManager.Instance.AddScore(1);
+            }
+
             words.Remove(activeWord);
             ShootAtWord(activeWord);
             activeWord = null;
@@ -46,11 +54,15 @@ public class WordManager : MonoBehaviour
 
     void ShootAtWord(Word wordToShoot)
     {
+        if (firePoint == null)
+        {
+            Debug.LogError("FirePoint is not assigned in the WordManager Inspector!");
+            return;
+        }
+        
         WordDisplay targetDisplay = wordToShoot.GetWordDisplay();
         if (targetDisplay != null)
         {
-            // --- THIS IS THE CHANGED PART ---
-            // Instead of Instantiate, we spawn from the pool using a "tag"
             GameObject bullet = ObjectPooler.Instance.SpawnFromPool("bullet", firePoint.position, Quaternion.identity);
             
             if (bullet != null)

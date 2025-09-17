@@ -4,13 +4,13 @@ using System.Linq;
 
 public class Wordgenerator : MonoBehaviour
 {
-    // --- Singleton Pattern ---
     private static Wordgenerator _instance;
     public static Wordgenerator Instance
     {
         get
         {
-            if (_instance == null) Debug.LogError("WordGenerator is NULL.");
+            if (_instance == null) _instance = FindAnyObjectByType<Wordgenerator>();
+            if (_instance == null) Debug.LogError("WordGenerator is NULL and could not be found.");
             return _instance;
         }
     }
@@ -23,17 +23,9 @@ public class Wordgenerator : MonoBehaviour
 
     void Awake()
     {
-        // Set up the singleton instance, ensuring only one exists
-        if (_instance == null)
-        {
-            _instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (_instance == null) _instance = this;
+        else Destroy(gameObject);
 
-        // Load words from the TextAsset, trim whitespace, and handle potential errors
         if (wordListSource != null)
         {
             wordList = wordListSource.text.Split('\n').Select(word => word.Trim()).ToList();
@@ -42,7 +34,7 @@ public class Wordgenerator : MonoBehaviour
         else
         {
             Debug.LogError("WordListSource TextAsset is not assigned in the WordGenerator's Inspector!");
-            wordList = new List<string>(); // Create an empty list to prevent further errors
+            wordList = new List<string>();
         }
     }
 
@@ -56,7 +48,6 @@ public class Wordgenerator : MonoBehaviour
         
         string randomWord;
         
-        // Ensure the same word isn't picked twice in a row if possible
         do
         {
             int randomIndex = Random.Range(0, wordList.Count);

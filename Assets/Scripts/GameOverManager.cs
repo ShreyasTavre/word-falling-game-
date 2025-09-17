@@ -13,7 +13,6 @@ public class GameOverManager : MonoBehaviour
         }
     }
 
-    public GameObject gameOverUIPanel;
     public WordTimer wordTimer;
 
     void Awake()
@@ -27,6 +26,13 @@ public class GameOverManager : MonoBehaviour
         Debug.Log("--- GAME OVER TRIGGERED! ---");
     
         if (wordTimer != null) wordTimer.enabled = false;
+        
+        // --- ADDED LINE ---
+        // Also disable the main timer in UIManager
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.enabled = false;
+        }
 
         GameObject[] wordsOnScreen = GameObject.FindGameObjectsWithTag("Word");
         foreach (GameObject word in wordsOnScreen)
@@ -34,14 +40,21 @@ public class GameOverManager : MonoBehaviour
             Destroy(word);
         }
 
-        if (gameOverUIPanel != null) gameOverUIPanel.SetActive(true);
-        
-        Time.timeScale = 0f;
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowGameOver();
+        }
     }
 
     public void RestartGame()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitting game... (Note: This only works in a built application, not the editor)");
+        Application.Quit();
     }
 }

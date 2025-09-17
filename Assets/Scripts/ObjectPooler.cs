@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ObjectPooler : MonoBehaviour
 {
-    // A class to define the properties of each pool in the Inspector
     [System.Serializable]
     public class Pool
     {
@@ -12,7 +11,6 @@ public class ObjectPooler : MonoBehaviour
         public int size;
     }
 
-    // --- Singleton Pattern ---
     public static ObjectPooler Instance;
     private void Awake()
     {
@@ -26,16 +24,14 @@ public class ObjectPooler : MonoBehaviour
     {
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
-        // Loop through all the pools defined in the Inspector
         foreach (Pool pool in pools)
         {
             Queue<GameObject> objectPool = new Queue<GameObject>();
 
-            // Pre-instantiate the objects for the pool and add them to the queue
             for (int i = 0; i < pool.size; i++)
             {
                 GameObject obj = Instantiate(pool.prefab);
-                obj.SetActive(false); // Start with the object disabled
+                obj.SetActive(false);
                 objectPool.Enqueue(obj);
             }
 
@@ -43,12 +39,17 @@ public class ObjectPooler : MonoBehaviour
         }
     }
 
-    // Method to get an object from the pool
     public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
         if (!poolDictionary.ContainsKey(tag))
         {
             Debug.LogWarning("Pool with tag " + tag + " doesn't exist.");
+            return null;
+        }
+
+        if (poolDictionary[tag].Count == 0)
+        {
+            Debug.LogWarning("Pool with tag " + tag + " is empty. Consider increasing its size.");
             return null;
         }
 
@@ -58,7 +59,6 @@ public class ObjectPooler : MonoBehaviour
         objectToSpawn.transform.position = position;
         objectToSpawn.transform.rotation = rotation;
         
-        // Add the object back to the end of the queue, so the pool never runs out
         poolDictionary[tag].Enqueue(objectToSpawn);
 
         return objectToSpawn;

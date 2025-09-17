@@ -3,7 +3,7 @@ using UnityEngine;
 public class WordSpawner : MonoBehaviour
 {
     public GameObject wordPrefab;
-    public Transform wordCanvas; // The canvas to spawn words under
+    public Transform wordCanvas;
 
     private Camera mainCamera;
 
@@ -14,7 +14,6 @@ public class WordSpawner : MonoBehaviour
 
     public WordDisplay SpawnWord()
     {
-        // Calculate screen boundaries in world coordinates
         Vector3 leftBound = mainCamera.ScreenToWorldPoint(new Vector3(0, 0, 0));
         Vector3 rightBound = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0));
         

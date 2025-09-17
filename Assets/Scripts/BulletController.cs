@@ -8,11 +8,11 @@ public class BulletController : MonoBehaviour
     private Rigidbody2D rb;
     private Camera mainCamera;
 
-    // This is a new method that gets called when the object is enabled
     void OnEnable()
     {
         rb = GetComponent<Rigidbody2D>();
         mainCamera = Camera.main;
+        targetWordDisplay = null;
     }
     
     public void SetTarget(WordDisplay target)
@@ -29,16 +29,17 @@ public class BulletController : MonoBehaviour
         }
         else
         {
-            // If the target is gone, return to the pool
             gameObject.SetActive(false);
             return;
         }
 
-        Vector3 screenPoint = mainCamera.WorldToViewportPoint(transform.position);
-        if (screenPoint.x < -0.1f || screenPoint.x > 1.1f || screenPoint.y < -0.1f || screenPoint.y > 1.1f)
+        if (mainCamera != null)
         {
-            // If off-screen, return to the pool
-            gameObject.SetActive(false);
+            Vector3 screenPoint = mainCamera.WorldToViewportPoint(transform.position);
+            if (screenPoint.x < -0.1f || screenPoint.x > 1.1f || screenPoint.y < -0.1f || screenPoint.y > 1.1f)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
     
@@ -47,7 +48,6 @@ public class BulletController : MonoBehaviour
         WordDisplay hitWord = other.GetComponent<WordDisplay>();
         if (hitWord != null && hitWord == targetWordDisplay)
         {
-            // Destroy the word, but return the bullet to the pool
             Destroy(other.gameObject);
             gameObject.SetActive(false);
         }

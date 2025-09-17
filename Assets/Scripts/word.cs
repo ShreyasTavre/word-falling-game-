@@ -17,7 +17,10 @@ public class Word
         display.SetWord(word);
     }
 
-    public char GetNextLetter() => word[typeIndex];
+    public char GetNextLetter()
+    {
+        return word[typeIndex];
+    }
 
     public void TypeLetter()
     {
@@ -27,8 +30,13 @@ public class Word
         display.UpdateText($"<color={typedColorHex}>{typedPart}</color>{untypedPart}");
     }
 
-    public bool WordTyped() => (typeIndex >= word.Length);
+    public bool WordTyped()
+    {
+        return (typeIndex >= word.Length);
+    }
 
-    // Provide direct access to the WordDisplay component
-    public WordDisplay GetWordDisplay() => display;
+    public WordDisplay GetWordDisplay()
+    {
+        return display;
+    }
 }

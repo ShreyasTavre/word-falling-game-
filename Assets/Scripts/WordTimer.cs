@@ -23,10 +23,12 @@ public class WordTimer : MonoBehaviour
     {
         if (Time.time >= nextWordTime && this.enabled)
         {
-            wordManager.AddWord();
+            if (wordManager != null)
+            {
+                wordManager.AddWord();
+            }
             nextWordTime = Time.time + currentDelay;
             
-            // Increase difficulty but clamp it within safe bounds
             currentDelay *= difficultyMultiplier;
             currentDelay = Mathf.Clamp(currentDelay, minDelay, initialDelay);
         }
